@@ -7,22 +7,28 @@ const $list = document.querySelector(".list");
 const $playBtn = document.querySelector("#play-btn");
 const $pauseBtn = document.querySelector("#pause-btn");
 const $title = document.querySelector("#title");
+const $videRange = document.querySelector("#videoRange");
+const $currentTime = document.querySelector("#currentTime")
 let $videos = [
      {
           src: "./video/video1.mp4",
           title: "Motivation",
+          images: "./video/image.jpg"
      },
      {
           src: "./video/video2.mp4",
           title: "Learning CSS",
+          images: "./video/image.jpg"
      },
      {
           src: "./video/video3.mp4",
-          title: "Learning CSS 2"
+          title: "Learning CSS 2",
+          images: "./video/image.jpg"
      },
      {
           src: "./video/video4.mp4",
-          title: "Learning CSS 3"
+          title: "Learning CSS 3",
+          images: "./video/image.jpg"
      }
 ]
 let currentIndex = 0
@@ -41,6 +47,7 @@ const playVideo = () => {
      $videoPlayer.play()
      $playBtn.style.display = "none"
      $pauseBtn.style.display = "block"
+     rangeVideo()
 }
      else {
      $videoPlayer.pause()
@@ -78,15 +85,67 @@ const shuffleVideo = () => {
      currentVideo()
      autoPlaying = false
      playVideo()
-}  
-$videos.forEach((item) => {
-     $list.innerHTML += `
-     <span>${item.title}</span>
-     <br>
-     `
-})
+} 
+const formatTime = (s) => {
+let minutes = Math.floor(s / 60);
+let seconds = Math.floor(s % 60);
+return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+}
+const rangeVideo = () => {
+     
+let formatRange = setInterval(() => {
+     let precent = $videoPlayer.currentTime / $videoPlayer.duration * 100
+     $videRange.value = precent
+     $currentTime.innerText = formatTime($videoPlayer.duration - $videoPlayer.currentTime)
+}, 100)
+}
+const changeRange = (e) => {
+     let seconds = $videoPlayer.duration * $videRange.value / 100;
+     $videoPlayer.currentTime = seconds
+}
+
+const checkEndVideo = () => {
+     let checkVideo = setInterval(() => {
+          if($videoPlayer.currentTime === $videoPlayer.duration) {
+               nextVideo()
+               clearInterval(checkEndVideo)
+          }
+     }, 100)
+}
+
+checkEndVideo()
+
+const renderList = () => {
+     $videos.forEach((audio, index) => {
+
+          const videoEl = document.createElement("video")
+          const $div = document.createElement("div");
+          $div.classList.add("selected")
+          videoEl.src = audio.src
+
+          $div.dataset.videoId = index
+
+          $div.innerHTML = `
+               <img class="images-group" src="${audio.images}" alt="${audio.title}"/>
+               <h2>${audio.title}</h2>
+          `
+          $list.prepend($div)
+     })
+}
+const playSelectedVideo = (e) => {
+     if(e.target.classList.contains("selected")) {
+          currentIndex = +e.target.dataset.videoId
+          currentVideo()
+          autoPlaying = false
+          playVideo()
+     }
+}
+
+renderList()
 $playBtn.addEventListener("click", playVideo)
 $pauseBtn.addEventListener("click", playVideo)
 $next.addEventListener("click", nextVideo)
 $prev.addEventListener("click", prevVideo)
+$list.addEventListener("click", playSelectedVideo)
 $shuffle.addEventListener("click", shuffleVideo)
+$videRange.addEventListener("input", changeRange)

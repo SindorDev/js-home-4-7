@@ -12,7 +12,15 @@
     <div class="wrapper">
         <div class="video">
             <video src="" id="video-player"></video>
+            <img src="" alt="">
             <h1 id="title"></h1>
+
+            <div class="range">
+                <input type="range" id="videoRange" step="0.1" value="0">
+                <div >
+                    <p id="currentTime">00:00</p>
+                </div>
+            </div>
             <div class="buttons">
                 <button id="prev" class="btn" >
                     <i class="bi bi-rewind-fill"></i>
@@ -33,7 +41,6 @@
 
     </div>
     <div class="list">
-
     </div>
 
     <script src="./script/app.js"></script>
